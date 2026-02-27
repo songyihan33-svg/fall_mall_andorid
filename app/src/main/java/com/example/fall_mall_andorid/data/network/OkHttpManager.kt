@@ -7,11 +7,13 @@ import okhttp3.Callback
 import okhttp3.FormBody
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
+import java.net.Proxy
 import java.util.concurrent.TimeUnit
 
 /**
@@ -31,17 +33,52 @@ object OkHttpManager {
     /** 默认 JSON 请求体类型 */
     private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
 
+    /** 统一认证 Token，登录后设置、退出时清空。拦截器会据此自动添加 Authorization 头 */
+    @Volatile
+    private var authToken: String? = null
+
+    /**
+     * 设置认证 Token，之后所有请求会自动携带 Header：Authorization: Bearer {token}
+     * 登录成功后调用，如：OkHttpManager.setAuthToken(token)
+     */
+    fun setAuthToken(token: String?) {
+        authToken = token
+    }
+
+    /**
+     * 清空 Token（退出登录时调用）
+     */
+    fun clearAuthToken() {
+        authToken = null
+    }
+
     /**
      * 单例 OkHttpClient
-     * - 日志拦截器：BuildConfig.DEBUG 时打印请求/响应（可按需改为 true）
+     * - 认证拦截器：有 token 时自动加 Authorization
+     * - 日志拦截器：打印请求/响应
+     * 注意：属性名用 okHttpClient 避免与下方 getClient() 方法 JVM 签名冲突（属性会生成 getClient() getter）
      */
-    private val client: OkHttpClient by lazy {
+    private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
             .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+            .proxy(Proxy.NO_PROXY) // 直连接口，不走系统代理，避免代理 192.168.1.34:7890 不可达导致登录失败
+            .addInterceptor(createAuthInterceptor())
             .addInterceptor(createLoggingInterceptor())
             .build()
+    }
+
+    private fun createAuthInterceptor(): Interceptor = Interceptor { chain ->
+        val token = authToken
+        val request = if (!token.isNullOrBlank()) {
+            chain.request().newBuilder()
+                .addHeader("Authorization", "Bearer $token")
+                .build()
+        } else {
+            chain.request()
+        }
+        chain.proceed(request)
     }
 
     private fun createLoggingInterceptor(): HttpLoggingInterceptor {
@@ -53,7 +90,7 @@ object OkHttpManager {
     /**
      * 获取 OkHttpClient 实例（供需要自定义请求时使用）
      */
-    fun getClient(): OkHttpClient = client
+    fun getClient(): OkHttpClient = okHttpClient
 
     /**
      * GET 请求（协程挂起，在 IO 线程执行）
@@ -139,7 +176,7 @@ object OkHttpManager {
      */
     private fun executeRequest(request: Request): HttpResult<String> {
         return try {
-            client.newCall(request).execute().use { response ->
+            okHttpClient.newCall(request).execute().use { response ->
                 val body = response.body?.string() ?: ""
                 if (response.isSuccessful) {
                     HttpResult.Success(body)
@@ -166,7 +203,7 @@ object OkHttpManager {
         request: Request,
         onResult: (HttpResult<String>) -> Unit
     ) {
-        client.newCall(request).enqueue(object : Callback {
+        okHttpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 onResult(HttpResult.Failure(e.message ?: "Network error", throwable = e))
             }

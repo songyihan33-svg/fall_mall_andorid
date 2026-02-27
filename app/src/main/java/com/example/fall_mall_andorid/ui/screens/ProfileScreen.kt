@@ -35,7 +35,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
+import com.example.fall_mall_andorid.data.model.LoginResult
+import com.example.fall_mall_andorid.data.session.UserManager
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -47,13 +53,15 @@ import com.example.fall_mall_andorid.navigation.Screen
 
 @Composable
 fun ProfileScreen(navController: NavHostController) {
+    val user by UserManager.currentUserFlow.collectAsState(initial = UserManager.getCurrentUser())
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        // 顶部用户信息区域
-        UserProfileHeader()
+        // 顶部用户信息：已登录显示头像和昵称且不可点击跳转，未登录显示「点击登录」
+        UserProfileHeader(user = user, navController = navController)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -67,17 +75,20 @@ fun ProfileScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 设置选项
-        SettingsSection()
+        // 设置选项（含退出登录）
+        SettingsSection(onLogout = { UserManager.clearUser() })
     }
 }
 
 @Composable
-private fun UserProfileHeader() {
+private fun UserProfileHeader(user: LoginResult?, navController: NavHostController) {
+    val modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)
+    val clickModifier = if (user == null) modifier.clickable { navController.navigate(Screen.Login.route) } else modifier
+
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+        modifier = clickModifier,
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.onSurface
@@ -90,7 +101,7 @@ private fun UserProfileHeader() {
                 .padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 用户头像
+            // 用户头像：已登录用网络头像，未登录用占位图标
             Box(
                 modifier = Modifier
                     .size(60.dp)
@@ -98,33 +109,44 @@ private fun UserProfileHeader() {
                     .background(MaterialTheme.colorScheme.primary),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "用户头像",
-                    tint = Color.White,
-                    modifier = Modifier.size(32.dp)
-                )
+                if (user != null && user.avatar.isNotBlank()) {
+                    AsyncImage(
+                        model = user.avatar,
+                        contentDescription = "用户头像",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "用户头像",
+                        tint = Color.White,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // 用户信息
+            // 用户信息：已登录显示昵称/账号，未登录显示「点击登录/注册」
             Column(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "用户名",
+                    text = if (user != null) (user.nickname?.takeIf { it.isNotBlank() } ?: user.account) else "用户名",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "点击登录/注册",
+                    text = if (user != null) user.mobile.ifBlank { "已登录" } else "点击登录/注册",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            // 编辑按钮
+            // 编辑按钮（已登录可点，未登录不跳转登录）
             Icon(
                 imageVector = Icons.Default.Edit,
                 contentDescription = "编辑信息",
@@ -240,7 +262,7 @@ private fun FunctionMenuSection(navController: NavHostController) {
 }
 
 @Composable
-private fun SettingsSection() {
+private fun SettingsSection(onLogout: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -251,7 +273,7 @@ private fun SettingsSection() {
         Column {
             MenuItem(icon = Icons.Default.Settings, label = "设置") { /* TODO */ }
             Divider()
-            MenuItem(icon = Icons.Default.ExitToApp, label = "退出登录", textColor = Color.Red) { /* TODO */ }
+            MenuItem(icon = Icons.Default.ExitToApp, label = "退出登录", textColor = Color.Red, onClick = onLogout)
         }
     }
 }

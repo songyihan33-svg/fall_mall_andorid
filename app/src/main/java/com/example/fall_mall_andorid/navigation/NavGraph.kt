@@ -11,6 +11,7 @@ import com.example.fall_mall_andorid.ui.screens.CategoryScreen
 import com.example.fall_mall_andorid.ui.screens.FavoritesScreen
 import com.example.fall_mall_andorid.ui.screens.HomeScreen
 import com.example.fall_mall_andorid.ui.screens.ProfileScreen
+import com.example.fall_mall_andorid.ui.screens.login.LoginScreen
 
 /**
  * Kotlin 知识点：枚举类 enum class
@@ -23,6 +24,7 @@ enum class Screen(val route: String) {
     Profile("profile"),
     // 新增的个人中心相关页面
     Favorites("favorites"),
+    Login("login"),
     Address("address"),
     Notifications("notifications"),
     Help("help"),
@@ -46,5 +48,6 @@ fun FallMallNavGraph(
         composable(Screen.Profile.route) { ProfileScreen(navController) }
         // 新增的页面路由
         composable(Screen.Favorites.route) { FavoritesScreen(navController = navController) }
+        composable(Screen.Login.route) { LoginScreen(navController = navController) }
     }
 }
