@@ -19,17 +19,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -51,6 +52,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.fall_mall_andorid.navigation.Screen
 
+private val ProfileHeaderBg = Color(0xFFFEFEFE) // 我的页顶部背景
+
 @Composable
 fun ProfileScreen(navController: NavHostController) {
     val user by UserManager.currentUserFlow.collectAsState(initial = UserManager.getCurrentUser())
@@ -59,41 +62,54 @@ fun ProfileScreen(navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
     ) {
-        // 顶部用户信息：已登录显示头像和昵称且不可点击跳转，未登录显示「点击登录」
-        UserProfileHeader(user = user, navController = navController)
+        // 顶部背景条 + 用户卡片
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Transparent)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)
+            ) {
+                UserProfileHeader(user = user, navController = navController)
+            }
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        //功能菜单
+        Spacer(modifier = Modifier.height(12.dp))
+        FunctionMenuSection1(navController = navController)
 
-        // 订单状态统计
+        // 我的订单
+        Spacer(modifier = Modifier.height(12.dp))
         OrderStatusSection()
 
-        Spacer(modifier = Modifier.height(16.dp))
+        // 功能菜单
+        Spacer(modifier = Modifier.height(12.dp))
+        FunctionMenuSection2(navController = navController)
 
-        // 功能菜单列表
-        FunctionMenuSection(navController = navController)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // 设置选项（含退出登录）
+        // 设置与退出
+        Spacer(modifier = Modifier.height(12.dp))
         SettingsSection(onLogout = { UserManager.clearUser() })
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
 @Composable
 private fun UserProfileHeader(user: LoginResult?, navController: NavHostController) {
-    val modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)
+    val modifier = Modifier.fillMaxWidth()
     val clickModifier = if (user == null) modifier.clickable { navController.navigate(Screen.Login.route) } else modifier
 
     Card(
         modifier = clickModifier,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onSurface
+            containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -140,7 +156,7 @@ private fun UserProfileHeader(user: LoginResult?, navController: NavHostControll
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = if (user != null) user.mobile.ifBlank { "已登录" } else "点击登录/注册",
+                    text = user?.mobile?.ifBlank { "已登录" } ?: "点击登录/注册",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -166,28 +182,41 @@ private fun OrderStatusSection() {
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
-            Text(
-                text = "我的订单",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // 订单状态行
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                OrderStatusItem(icon = Icons.Default.DateRange, label = "待付款", count = 2)
-                OrderStatusItem(icon = Icons.Default.ExitToApp, label = "待发货", count = 1)
-                OrderStatusItem(icon = Icons.Default.DateRange, label = "待收货", count = 0)
-                OrderStatusItem(icon = Icons.Default.DateRange, label = "待评价", count = 3)
+                Text(
+                    text = "我的订单",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = "全部订单",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.clickable { /* TODO: 订单列表 */ }
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                OrderStatusItem(icon = Icons.Default.DateRange, label = "全部订单", count = 2, modifier = Modifier.weight(1f))
+                OrderStatusItem(icon = Icons.Default.DateRange, label = "待付款", count = 1, modifier = Modifier.weight(1f))
+                OrderStatusItem(icon = Icons.Default.DateRange, label = "待发货", count = 0, modifier = Modifier.weight(1f))
+                OrderStatusItem(icon = Icons.Default.DateRange, label = "待收货", count = 3, modifier = Modifier.weight(1f))
+                OrderStatusItem(icon = Icons.Default.MailOutline, label = "待评价", count = 0, modifier = Modifier.weight(1f))
             }
         }
     }
@@ -197,11 +226,13 @@ private fun OrderStatusSection() {
 private fun OrderStatusItem(
     icon: ImageVector,
     label: String,
-    count: Int
+    count: Int,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable { /* TODO: 跳转到对应订单页面 */ }
+        modifier = modifier.clickable { onClick() }
     ) {
         Box(
             contentAlignment = Alignment.TopEnd
@@ -238,24 +269,72 @@ private fun OrderStatusItem(
     }
 }
 
+
 @Composable
-private fun FunctionMenuSection(navController: NavHostController) {
+private fun FunctionMenuSection1(navController: NavHostController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Text(
+//                    text = "我的订单",
+//                    style = MaterialTheme.typography.titleMedium,
+//                    fontWeight = FontWeight.SemiBold
+//                )
+//                Text(
+//                    text = "全部订单",
+//                    style = MaterialTheme.typography.bodySmall,
+//                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+//                    modifier = Modifier.clickable { /* TODO: 订单列表 */ }
+//                )
+//            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                OrderStatusItem(icon = Icons.Default.Favorite, label = "我的收藏", count = 2, modifier = Modifier.weight(1f), onClick = {
+                    navController.navigate(Screen.Favorites.route)
+                })
+                OrderStatusItem(icon = Icons.Default.CheckCircle, label = "我的足迹", count = 1, modifier = Modifier.weight(1f))
+                OrderStatusItem(icon = Icons.Default.Person, label = "我的客服", count = 0, modifier = Modifier.weight(1f))
+            }
+        }
+    }
+}
+@Composable
+private fun FunctionMenuSection2(navController: NavHostController) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             MenuItem(icon = Icons.Default.Favorite, label = "我的收藏") {
                 navController.navigate(Screen.Favorites.route)
             }
-            HorizontalDivider()
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             MenuItem(icon = Icons.Default.LocationOn, label = "收货地址") { /* TODO */ }
-            Divider()
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             MenuItem(icon = Icons.Default.Notifications, label = "消息通知") { /* TODO */ }
-            Divider()
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             MenuItem(icon = Icons.Default.Person, label = "帮助与客服") { /* TODO */ }
         }
     }
@@ -268,11 +347,12 @@ private fun SettingsSection(onLogout: () -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column {
+        Column(modifier = Modifier.fillMaxWidth()) {
             MenuItem(icon = Icons.Default.Settings, label = "设置") { /* TODO */ }
-            Divider()
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             MenuItem(icon = Icons.Default.ExitToApp, label = "退出登录", textColor = Color.Red, onClick = onLogout)
         }
     }

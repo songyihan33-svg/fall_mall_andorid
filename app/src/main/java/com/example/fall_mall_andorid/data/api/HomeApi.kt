@@ -2,6 +2,7 @@ package com.example.fall_mall_andorid.data.api
 
 import com.example.fall_mall_andorid.data.model.home.BannerItem
 import com.example.fall_mall_andorid.data.model.home.CategoryHeadItem
+import com.example.fall_mall_andorid.data.model.home.FreshFindsResult
 import com.example.fall_mall_andorid.data.model.home.HotPreferenceResult
 import com.example.fall_mall_andorid.data.network.ApiResponse
 import com.example.fall_mall_andorid.data.network.HttpResult
@@ -55,6 +56,13 @@ object HomeApi {
         }
     }
 
+    suspend fun getNewHotPreference(): HttpResult<FreshFindsResult> {
+        val url = "${ApiConstants.BASE_URL}/home/new"
+        return when (val raw = OkHttpManager.get(url)) {
+            is HttpResult.Success -> parseNewThingResponse(raw.data)
+            is HttpResult.Failure -> HttpResult.Failure(raw.message, raw.code, raw.throwable)
+        }
+    }
     private fun parseBannerResponse(json: String): HttpResult<List<BannerItem>> {
         return try {
             val type = object : TypeToken<ApiResponse<List<BannerItem>>>() {}.type
@@ -87,6 +95,20 @@ object HomeApi {
         return try {
             val type = object : TypeToken<ApiResponse<HotPreferenceResult>>() {}.type
             val response: ApiResponse<HotPreferenceResult> = gson.fromJson(json, type)
+            if (response.result != null) {
+                HttpResult.Success(response.result)
+            } else {
+                HttpResult.Failure(response.msg)
+            }
+        } catch (e: Exception) {
+            HttpResult.Failure(e.message ?: "Parse error", throwable = e)
+        }
+    }
+
+    private fun parseNewThingResponse(json: String): HttpResult<FreshFindsResult> {
+        return try {
+            val type = object : TypeToken<ApiResponse<FreshFindsResult>>() {}.type
+            val response: ApiResponse<FreshFindsResult> = gson.fromJson(json, type)
             if (response.result != null) {
                 HttpResult.Success(response.result)
             } else {
