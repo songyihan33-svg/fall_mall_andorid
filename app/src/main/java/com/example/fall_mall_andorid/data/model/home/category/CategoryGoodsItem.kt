@@ -1,4 +1,4 @@
-package com.example.fall_mall_andorid.data.model.home
+package com.example.fall_mall_andorid.data.model.home.category
 
 /**
  * 分类下的商品简要信息（首页分类列表接口中的 goods 元素）

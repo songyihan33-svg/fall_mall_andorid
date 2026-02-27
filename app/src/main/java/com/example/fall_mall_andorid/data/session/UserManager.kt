@@ -1,6 +1,6 @@
 package com.example.fall_mall_andorid.data.session
 
-import com.example.fall_mall_andorid.data.model.LoginResult
+import com.example.fall_mall_andorid.data.model.login.LoginResult
 import com.example.fall_mall_andorid.data.network.OkHttpManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

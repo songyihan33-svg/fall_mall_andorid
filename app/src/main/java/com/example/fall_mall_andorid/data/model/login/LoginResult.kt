@@ -1,4 +1,4 @@
-package com.example.fall_mall_andorid.data.model
+package com.example.fall_mall_andorid.data.model.login
 
 /**
  * 登录接口返回的 result 用户信息

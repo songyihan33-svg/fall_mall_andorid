@@ -3,7 +3,7 @@ package com.example.fall_mall_andorid.ui.screens.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fall_mall_andorid.data.api.AuthApi
-import com.example.fall_mall_andorid.data.model.LoginResult
+import com.example.fall_mall_andorid.data.model.login.LoginResult
 import com.example.fall_mall_andorid.data.network.HttpResult
 import com.example.fall_mall_andorid.data.network.OkHttpManager
 import com.example.fall_mall_andorid.data.session.UserManager

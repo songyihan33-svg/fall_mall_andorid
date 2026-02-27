@@ -1,4 +1,4 @@
-package com.example.fall_mall_andorid.data.model.home
+package com.example.fall_mall_andorid.data.model.home.hotprefrence
 
 /**
  * 首页-特惠推荐 接口返回的 result
@@ -8,5 +8,5 @@ package com.example.fall_mall_andorid.data.model.home
 data class HotPreferenceResult(
     val id: String,
     val title: String,
-    val subTypes: List<HotPreferenceSubType>? = null
+    val subTypes: List<HotPreferenceSubType>
 )

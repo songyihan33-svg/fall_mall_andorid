@@ -1,4 +1,4 @@
-package com.example.fall_mall_andorid.data.model.home
+package com.example.fall_mall_andorid.data.model.home.freshfinds
 
 data class FreshFindsResult(
     val id: String,

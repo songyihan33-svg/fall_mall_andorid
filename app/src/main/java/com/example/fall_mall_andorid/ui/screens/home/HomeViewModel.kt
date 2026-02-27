@@ -3,9 +3,9 @@ package com.example.fall_mall_andorid.ui.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fall_mall_andorid.data.api.HomeApi
-import com.example.fall_mall_andorid.data.model.home.BannerItem
-import com.example.fall_mall_andorid.data.model.home.CategoryGoodsItem
-import com.example.fall_mall_andorid.data.model.home.CategoryHeadItem
+import com.example.fall_mall_andorid.data.model.home.banner.BannerItem
+import com.example.fall_mall_andorid.data.model.home.category.CategoryGoodsItem
+import com.example.fall_mall_andorid.data.model.home.category.CategoryHeadItem
 import com.example.fall_mall_andorid.data.network.HttpResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

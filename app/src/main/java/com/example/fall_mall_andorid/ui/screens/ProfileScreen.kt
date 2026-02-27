@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,7 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
-import com.example.fall_mall_andorid.data.model.LoginResult
+import com.example.fall_mall_andorid.data.model.login.LoginResult
 import com.example.fall_mall_andorid.data.session.UserManager
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -89,7 +91,9 @@ fun ProfileScreen(navController: NavHostController) {
 
         // 功能菜单
         Spacer(modifier = Modifier.height(12.dp))
-        FunctionMenuSection2(navController = navController)
+//        FunctionMenuSection2(navController = navController)
+//        猜你喜欢
+         GuessYouLikeSection(navController = navController)
 
         // 设置与退出
         Spacer(modifier = Modifier.height(12.dp))
@@ -391,5 +395,35 @@ private fun MenuItem(
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(18.dp)
         )
+    }
+}
+
+@Composable
+private fun GuessYouLikeSection(navController: NavHostController) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            SectionTitle(left = "猜你喜欢", right = null)
+        }
+
+//        LazyVerticalStaggeredGrid(
+//            columns = StaggeredGridCells.Adaptive(160.dp),
+//            modifier = TODO(),
+//            state = TODO(),
+//            contentPadding = TODO(),
+//            reverseLayout = TODO(),
+//            verticalItemSpacing = TODO(),
+//            horizontalArrangement = TODO(),
+//            flingBehavior = TODO(),
+//            userScrollEnabled = TODO(),
+//            overscrollEffect = TODO(),
+//            content = TODO()
+//        )
     }
 }

@@ -1,4 +1,4 @@
-package com.example.fall_mall_andorid.data.model.home
+package com.example.fall_mall_andorid.data.model.home.category
 
 /**
  * 首页分类下的二级分类

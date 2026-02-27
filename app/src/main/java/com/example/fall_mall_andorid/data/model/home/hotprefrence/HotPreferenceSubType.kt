@@ -1,4 +1,4 @@
-package com.example.fall_mall_andorid.data.model.home
+package com.example.fall_mall_andorid.data.model.home.hotprefrence
 
 /**
  * 特惠推荐下的子类型（如「精选全攻略」等）
@@ -6,5 +6,5 @@ package com.example.fall_mall_andorid.data.model.home
 data class HotPreferenceSubType(
     val id: String,
     val title: String,
-    val goodsItems: HotPreferenceGoodsItems? = null
+    val goodsItems: HotPreferenceGoodsItems
 )

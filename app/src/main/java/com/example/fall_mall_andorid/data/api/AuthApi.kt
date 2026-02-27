@@ -1,6 +1,6 @@
 package com.example.fall_mall_andorid.data.api
 
-import com.example.fall_mall_andorid.data.model.LoginResult
+import com.example.fall_mall_andorid.data.model.login.LoginResult
 import com.example.fall_mall_andorid.data.network.ApiResponse
 import com.example.fall_mall_andorid.data.network.HttpResult
 import com.example.fall_mall_andorid.data.network.OkHttpManager

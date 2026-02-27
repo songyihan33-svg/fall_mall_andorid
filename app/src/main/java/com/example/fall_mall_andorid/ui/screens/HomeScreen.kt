@@ -48,9 +48,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.fall_mall_andorid.data.model.home.BannerItem
-import com.example.fall_mall_andorid.data.model.home.CategoryGoodsItem
-import com.example.fall_mall_andorid.data.model.home.CategoryHeadItem
+import com.example.fall_mall_andorid.data.model.home.banner.BannerItem
+import com.example.fall_mall_andorid.data.model.home.category.CategoryGoodsItem
+import com.example.fall_mall_andorid.data.model.home.category.CategoryHeadItem
 import com.example.fall_mall_andorid.ui.screens.home.HomeViewModel
 
 private val SearchBarBeige = Color(0xFFF5F0E8)//背景
@@ -289,7 +289,7 @@ private fun CategorySection(categories: List<CategoryHeadItem>) {
 }
 
 @Composable
-private fun SectionTitle(left: String, right: String?) {
+fun SectionTitle(left: String, right: String?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
