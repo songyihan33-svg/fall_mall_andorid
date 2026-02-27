@@ -1,4 +1,4 @@
-package com.example.fall_mall_andorid.data.model
+package com.example.fall_mall_andorid.data.model.home
 
 /**
  * 首页 Banner 单项

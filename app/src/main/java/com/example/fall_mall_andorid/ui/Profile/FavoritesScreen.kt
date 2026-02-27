@@ -65,7 +65,7 @@ fun FavoritesScreen(navController: NavHostController? = null) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = Color.Transparent
                 )
             )
         }
