@@ -10,3 +10,6 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
+/** 启动屏背景色（与启动图标风格一致） */
+val SplashOrange = Color(0xFFE85D04)
+
