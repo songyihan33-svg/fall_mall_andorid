@@ -154,6 +154,22 @@ object OkHttpManager {
     }
 
     /**
+     * DELETE 请求（不带请求体）
+     */
+    suspend fun delete(
+        url: String,
+        headers: Map<String, String> = emptyMap()
+    ): HttpResult<String> = withContext(Dispatchers.IO) {
+        executeRequest(
+            request = Request.Builder()
+                .url(url)
+                .apply { headers.forEach { (k, v) -> addHeader(k, v) } }
+                .delete()
+                .build()
+        )
+    }
+
+    /**
      * POST JSON 请求体
      */
     suspend fun postJson(
@@ -170,6 +186,44 @@ object OkHttpManager {
                 .build()
         )
     }
+
+
+    /**
+     * PUT JSON 请求体
+     */
+    suspend fun putJson(
+        url: String,
+        jsonBody: String,
+        headers: Map<String, String> = emptyMap()
+    ): HttpResult<String> = withContext(Dispatchers.IO) {
+        val body = jsonBody.toRequestBody(JSON_MEDIA_TYPE)
+        executeRequest(
+            request = Request.Builder()
+                .url(url)
+                .apply { headers.forEach { (k, v) -> addHeader(k, v) } }
+                .put(body)
+                .build()
+        )
+    }
+
+    /**
+     * DELETE JSON 请求体
+     */
+    suspend fun deleteJson(
+        url: String,
+        jsonBody: String,
+        headers: Map<String, String> = emptyMap()
+    ): HttpResult<String> = withContext(Dispatchers.IO) {
+        val body = jsonBody.toRequestBody(JSON_MEDIA_TYPE)
+        executeRequest(
+            request = Request.Builder()
+                .url(url)
+                .apply { headers.forEach { (k, v) -> addHeader(k, v) } }
+                .delete(body)
+                .build()
+        )
+    }
+
 
     /**
      * 同步执行 Request，将结果封装为 HttpResult<String>
